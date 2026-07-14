@@ -1,7 +1,4 @@
-"""Flask application factory.
-
-Registers blueprints, CORS, and global error handlers.
-"""
+import os
 
 from flask import Flask
 from flask_cors import CORS
@@ -27,10 +24,12 @@ def create_app() -> Flask:
     # Max upload size: 55 MB (thumbnail 5 MB + 3D file 50 MB)
     app.config["MAX_CONTENT_LENGTH"] = 55 * 1024 * 1024
 
+    origins = [o.strip() for o in os.getenv("FRONTEND_URL", "http://localhost:5173").split(",") if o.strip()]
+
     # CORS — whitelist the Vite dev server origin
     CORS(
         app,
-        origins=[app.config.get("FRONTEND_URL"), "http://localhost:5173"],
+        origins=origins,
         supports_credentials=True,
         allow_headers=["Content-Type", "Authorization"],
         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
